@@ -5,8 +5,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.jsqlparser/jsqlparser/badge.svg)](http://maven-badges.herokuapp.com/maven-central/com.github.jsqlparser/jsqlparser)
 [![Javadocs](https://www.javadoc.io/badge/com.github.jsqlparser/jsqlparser.svg)](https://www.javadoc.io/doc/com.github.jsqlparser/jsqlparser)
 
-[![PayPal donate button](http://img.shields.io/paypal/donate.png?color=blue)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=64CCN9JJANZXA "Help this JSqlParser version using Paypal")  
-
 [![Gitter](https://badges.gitter.im/JSQLParser/JSqlParser.svg)](https://gitter.im/JSQLParser/JSqlParser?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/JSQLParser/JSqlParser.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/JSQLParser/JSqlParser/context:java)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/JSQLParser/JSqlParser.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/JSQLParser/JSqlParser/alerts)
@@ -19,9 +17,14 @@ JSqlParser is dual licensed under **LGPL V2.1** or **Apache Software License, Ve
 
 ## Discussion
 
-Please provide feedback on https://github.com/JSQLParser/JSqlParser/issues/677, about removing bracket identifier quotation to support array processing.
+Please provide feedback on:
+
+* https://github.com/JSQLParser/JSqlParser/issues/677, about removing bracket identifier quotation to support array processing.
+* Is there any need for a Java 7 JSqlParser build, or can we move on to at least Java 8? (https://github.com/JSQLParser/JSqlParser/issues/814)
 
 ## News
+* JSqlParser uses now Java 8 at the minimum
+* Released version **2.1** of JSqlParser
 * Released version **2.0** of JSqlParser
 * breaking **API** change: to support chained functions attribute type was changed to **Expression**
 * Released version **1.4** of JSqlParser
@@ -51,16 +54,24 @@ To help JSqlParser's development you are encouraged to provide
 * bugreports
 * pull requests for new features
 * improvement requests
-* fund new features
-* a little donation
+* fund new features or sponsor JSqlParser ([**Sponsor**](https://www.paypal.me/wumpz))
 
 **Please write in English, since it's the language most of the dev team knows.**
 
 Also I would like to know about needed examples or documentation stuff.
 
-## Extensions in the latest SNAPSHOT version 2.1
+## Extensions in the latest SNAPSHOT version 2.2
 
-* improved nested bracket parsing performance by a large scale
+* allow empty double quotes
+* allow **year**, **month** ... as column data type for **create table**
+* allow **duplicate** as object name
+* make it JDK 11 buildable
+* switched to minimum JDK 8 
+* avoid buffer copy of input data if a normal String input is used
+* allow **limit** and **offset** as keywords in specific places
+* DIV operator
+* improved performance for SQLCondition production
+* support for full text search (MATCH..AGAINST)
 
 ## Extensions of JSqlParser releases
 

@@ -589,6 +589,16 @@ public class SelectTest {
     }
 
     @Test
+    public void testLimitOffsetKeyWordAsNamedParameter() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable LIMIT :limit");
+    }
+
+    @Test
+    public void testLimitOffsetKeyWordAsNamedParameter2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable LIMIT :limit OFFSET :offset");
+    }
+
+    @Test
     public void testTop() throws JSQLParserException {
         String statement = "SELECT TOP 3 * FROM mytable WHERE mytable.col = 9";
 
@@ -1619,6 +1629,12 @@ public class SelectTest {
     }
 
     @Test
+    public void testStraightJoin() throws JSQLParserException {
+        String stmt = "SELECT col FROM tbl STRAIGHT_JOIN tbl2 ON tbl.id = tbl2.id";
+        assertSqlCanBeParsedAndDeparsed(stmt);
+    }
+
+    @Test
     public void testCastTypeProblem3() throws JSQLParserException {
         String stmt = "SELECT col1::varchar (256) FROM tabelle1";
         assertSqlCanBeParsedAndDeparsed(stmt);
@@ -1853,6 +1869,48 @@ public class SelectTest {
     }
 
     @Test
+    public void testOneColumnFullTextSearchMySQL() throws JSQLParserException {
+        String statement = "SELECT MATCH (col1) AGAINST ('test' IN NATURAL LANGUAGE MODE) relevance FROM tbl";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
+    public void testSeveralColumnsFullTextSearchMySQL() throws JSQLParserException {
+        String statement = "SELECT MATCH (col1,col2,col3) AGAINST ('test' IN NATURAL LANGUAGE MODE) relevance FROM tbl";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
+    public void testFullTextSearchInDefaultMode() throws JSQLParserException {
+        String statement = "SELECT col FROM tbl WHERE MATCH (col1,col2,col3) AGAINST ('test') ORDER BY col";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
+    public void testIsTrue() throws JSQLParserException {
+        String statement = "SELECT col FROM tbl WHERE col IS TRUE";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
+    public void testIsFalse() throws JSQLParserException {
+        String statement = "SELECT col FROM tbl WHERE col IS FALSE";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
+    public void testIsNotTrue() throws JSQLParserException {
+        String statement = "SELECT col FROM tbl WHERE col IS NOT TRUE";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
+    public void testIsNotFalse() throws JSQLParserException {
+        String statement = "SELECT col FROM tbl WHERE col IS NOT FALSE";
+        assertSqlCanBeParsedAndDeparsed(statement);
+    }
+
+    @Test
     public void testOracleJoin() throws JSQLParserException {
         String stmt = "SELECT * FROM tabelle1, tabelle2 WHERE tabelle1.a = tabelle2.b(+)";
         assertSqlCanBeParsedAndDeparsed(stmt);
@@ -1911,6 +1969,12 @@ public class SelectTest {
         stmt = "SELECT * FROM a INTERSECT SELECT * FROM b";
         Statement parsed = parserManager.parse(new StringReader(stmt));
         assertStatementCanBeDeparsedAs(parsed, "SELECT * FROM a INTERSECT SELECT * FROM b");
+    }
+
+    @Test
+    public void testIntegerDivOperator() throws Exception {
+        String stmt = "SELECT col DIV 3";
+        assertSqlCanBeParsedAndDeparsed(stmt);
     }
 
     @Test
@@ -2178,6 +2242,11 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed(stmt);
     }
 
+//    @Test
+//    public void testMultiValueIn3() throws JSQLParserException {
+//        String stmt = "SELECT * FROM mytable WHERE (SSN,SSM) IN (('11111111111111', '22222222222222'))";
+//        assertSqlCanBeParsedAndDeparsed(stmt);
+//    }
     @Test
     public void testPivot1() throws JSQLParserException {
         String stmt = "SELECT * FROM mytable PIVOT (count(a) FOR b IN ('val1'))";
@@ -3304,7 +3373,7 @@ public class SelectTest {
 
     @Test
     public void testMultiPartNamesIssue608() throws JSQLParserException {
-        assertSqlCanBeParsedAndDeparsed("SELECT @@session.tx_read_only");
+        assertSqlCanBeParsedAndDeparsed("SELECT @@sessions.tx_read_only");
     }
 
 //    Teradata allows SEL to be used in place of SELECT
@@ -3628,5 +3697,45 @@ public class SelectTest {
     @Test
     public void testSubQueryAliasIssue754() throws JSQLParserException {
         assertSqlCanBeParsedAndDeparsed("SELECT C0 FROM T0 INNER JOIN T1 ON C1 = C0 INNER JOIN (SELECT W1 FROM T2) S1 ON S1.W1 = C0 ORDER BY C0");
+    }
+
+    @Test
+    public void testSimilarToIssue789() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable WHERE (w_id SIMILAR TO '/foo/__/bar/(left|right)/[0-9]{4}-[0-9]{2}-[0-9]{2}(/[0-9]*)?')");
+    }
+
+    @Test
+    public void testSimilarToIssue789_2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable WHERE (w_id NOT SIMILAR TO '/foo/__/bar/(left|right)/[0-9]{4}-[0-9]{2}-[0-9]{2}(/[0-9]*)?')");
+    }
+
+    @Test
+    public void testCaseWhenExpressionIssue262() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT X1, (CASE WHEN T.ID IS NULL THEN CASE P.WEIGHT * SUM(T.QTY) WHEN 0 THEN NULL ELSE P.WEIGHT END ELSE SUM(T.QTY) END) AS W FROM A LEFT JOIN T ON T.ID = ? RIGHT JOIN P ON P.ID = ?");
+    }
+
+    @Test
+    public void testCaseWhenExpressionIssue200() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM t1, t2 WHERE CASE WHEN t1.id = 1 THEN t2.name = 'Marry' WHEN t1.id = 2 THEN t2.age = 10 END");
+    }
+
+    @Test
+    public void testKeywordDuplicate() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT mytable.duplicate FROM mytable");
+    }
+
+    @Test
+    public void testKeywordDuplicate2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable WHERE duplicate = 5");
+    }
+
+    @Test
+    public void testEmptyDoubleQuotes() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable WHERE col = \"\"");
+    }
+
+    @Test
+    public void testEmptyDoubleQuotes_2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable WHERE col = \" \"");
     }
 }

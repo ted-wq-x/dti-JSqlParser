@@ -13,23 +13,11 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
 
-/**
- * A "BETWEEN" expr1 expr2 statement
- */
-public class Between extends ASTNodeAccessImpl implements Expression {
+public class IsBooleanExpression extends ASTNodeAccessImpl implements Expression {
 
     private Expression leftExpression;
     private boolean not = false;
-    private Expression betweenExpressionStart;
-    private Expression betweenExpressionEnd;
-
-    public Expression getBetweenExpressionEnd() {
-        return betweenExpressionEnd;
-    }
-
-    public Expression getBetweenExpressionStart() {
-        return betweenExpressionStart;
-    }
+    private boolean isTrue = false;
 
     public Expression getLeftExpression() {
         return leftExpression;
@@ -37,14 +25,6 @@ public class Between extends ASTNodeAccessImpl implements Expression {
 
     public boolean isNot() {
         return not;
-    }
-
-    public void setBetweenExpressionEnd(Expression expression) {
-        betweenExpressionEnd = expression;
-    }
-
-    public void setBetweenExpressionStart(Expression expression) {
-        betweenExpressionStart = expression;
     }
 
     public void setLeftExpression(Expression expression) {
@@ -55,6 +35,14 @@ public class Between extends ASTNodeAccessImpl implements Expression {
         not = b;
     }
 
+    public boolean isTrue() {
+        return isTrue;
+    }
+
+    public void setIsTrue(boolean isTrue) {
+        this.isTrue = isTrue;
+    }
+
     @Override
     public void accept(ExpressionVisitor expressionVisitor) {
         expressionVisitor.visit(this);
@@ -62,7 +50,10 @@ public class Between extends ASTNodeAccessImpl implements Expression {
 
     @Override
     public String toString() {
-        return leftExpression + " " + (not ? "NOT " : "") + "BETWEEN " + betweenExpressionStart + " AND "
-                + betweenExpressionEnd;
+        if (isTrue()) {
+            return leftExpression + " IS" + (not ? " NOT" : "") + " TRUE";
+        } else {
+            return leftExpression + " IS" + (not ? " NOT" : "") + " FALSE";
+        }
     }
 }

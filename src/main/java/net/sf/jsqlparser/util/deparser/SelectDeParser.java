@@ -114,6 +114,11 @@ public class SelectDeParser implements SelectVisitor, SelectItemVisitor, FromIte
             }
         }
 
+        if (plainSelect.getKsqlWindow() != null) {
+            buffer.append(" WINDOW ");
+            buffer.append(plainSelect.getKsqlWindow().toString());
+        }
+
         if (plainSelect.getWhere() != null) {
             buffer.append(" WHERE ");
             plainSelect.getWhere().accept(expressionVisitor);
@@ -349,7 +354,11 @@ public class SelectDeParser implements SelectVisitor, SelectItemVisitor, FromIte
                 buffer.append(" SEMI");
             }
 
-            buffer.append(" JOIN ");
+            if (!join.isStraight()) {
+                buffer.append(" JOIN ");
+            } else {
+                buffer.append(" STRAIGHT_JOIN ");
+            }
 
         }
 

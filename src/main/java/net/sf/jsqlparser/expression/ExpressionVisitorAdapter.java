@@ -116,6 +116,11 @@ public class ExpressionVisitorAdapter implements ExpressionVisitor, ItemsListVis
     }
 
     @Override
+    public void visit(IntegerDivision expr) {
+        visitBinaryExpression(expr);
+    }
+
+    @Override
     public void visit(Multiplication expr) {
         visitBinaryExpression(expr);
     }
@@ -169,6 +174,18 @@ public class ExpressionVisitorAdapter implements ExpressionVisitor, ItemsListVis
 
     @Override
     public void visit(IsNullExpression expr) {
+        expr.getLeftExpression().accept(this);
+    }
+
+    @Override
+    public void visit(FullTextSearch expr) {
+        for (Column col : expr.getMatchColumns()) {
+            col.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(IsBooleanExpression expr) {
         expr.getLeftExpression().accept(this);
     }
 
@@ -500,5 +517,10 @@ public class ExpressionVisitorAdapter implements ExpressionVisitor, ItemsListVis
     @Override
     public void visit(CollateExpression col) {
         col.getLeftExpression().accept(this);
+    }
+
+    @Override
+    public void visit(SimilarToExpression expr) {
+        visitBinaryExpression(expr);
     }
 }

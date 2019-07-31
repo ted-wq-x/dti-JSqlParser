@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 import net.sf.jsqlparser.statement.create.table.Index;
@@ -25,6 +26,7 @@ import net.sf.jsqlparser.test.TestException;
 import static net.sf.jsqlparser.test.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -493,5 +495,78 @@ public class CreateTableTest {
         }
 
         return line;
+    }
+
+    @Test
+    public void testCollateUtf8Issue785() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE DEMO_SQL (SHARE_PWD varchar (128) COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'COMMENT') ENGINE = InnoDB AUTO_INCREMENT = 34 DEFAULT CHARSET = utf8 COLLATE = utf8_bin COMMENT = 'COMMENT'");
+    }
+
+    @Test
+    public void testCreateTableWithSetTypeIssue796() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE `tables_priv` (`Host` char (60) COLLATE utf8_bin NOT NULL DEFAULT '', `Table_priv` set ('Select', 'Insert', 'Update', 'Delete', 'Create', 'Drop', 'Grant', 'References', 'Index', 'Alter', 'Create View', 'Show view', 'Trigger') CHARACTER SET utf8 NOT NULL DEFAULT '') ENGINE = MyISAM DEFAULT CHARSET = utf8 COLLATE = utf8_bin COMMENT = 'Table privileges'");
+    }
+
+    @Test
+    public void testCreateTableIssue798() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE `comment` (`text_hash` varchar (32) COLLATE utf8_bin)");
+    }
+
+    @Test
+    public void testCreateTableIssue798_2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE parent (\n"
+                + "PARENT_ID int(11) NOT NULL AUTO_INCREMENT,\n"
+                + "PCN varchar(100) NOT NULL,\n"
+                + "IS_DELETED char(1) NOT NULL,\n"
+                + "STRUCTURE_ID int(11) NOT NULL,\n"
+                + "DIRTY_STATUS char(1) NOT NULL,\n"
+                + "BIOLOGICAL char(1) NOT NULL,\n"
+                + "STRUCTURE_TYPE int(11) NOT NULL,\n"
+                + "CST_ORIGINAL varchar(1000) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,\n"
+                + "MWT decimal(14,6) DEFAULT NULL,\n"
+                + "RESTRICTED int(11) NOT NULL,\n"
+                + "INIT_DATE datetime DEFAULT NULL,\n"
+                + "MOD_DATE datetime DEFAULT NULL,\n"
+                + "CREATED_BY varchar(255) NOT NULL,\n"
+                + "MODIFIED_BY varchar(255) NOT NULL,\n"
+                + "CHEMIST_ID varchar(255) NOT NULL,\n"
+                + "UNKNOWN_ID int(11) DEFAULT NULL,\n"
+                + "STEREOCHEMISTRY varchar(256) DEFAULT NULL,\n"
+                + "GEOMETRIC_ISOMERISM varchar(256) DEFAULT NULL,\n"
+                + "PRIMARY KEY (PARENT_ID),\n"
+                + "UNIQUE KEY PARENT_PCN_IDX (PCN),\n"
+                + "KEY PARENT_SID_IDX (STRUCTURE_ID),\n"
+                + "KEY PARENT_DIRTY_IDX (DIRTY_STATUS)\n"
+                + ") ENGINE=InnoDB AUTO_INCREMENT=2663 DEFAULT CHARSET=utf8", true);
+    }
+
+    @Test
+    public void testCreateTableIssue113() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE foo (reason character varying (255) DEFAULT 'Test' :: character varying NOT NULL)");
+    }
+
+    @Test
+    public void testCreateTableIssue830() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE testyesr (id int, yy year)");
+    }
+
+    @Test
+    public void testCreateTableIssue830_2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("CREATE TABLE testyesr (id int, yy year, mm month, dd day)");
+    }
+
+    @Test
+    public void testSettingCharacterSetIssue829() throws JSQLParserException {
+        String sql = "CREATE TABLE test (id int (11) NOT NULL, name varchar (64) CHARACTER SET GBK NOT NULL, age int (11) NOT NULL, score decimal (8, 2) DEFAULT NULL, description varchar (64) DEFAULT NULL, creationDate datetime DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id)) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4";
+        assertSqlCanBeParsedAndDeparsed(sql);
+        CreateTable stmt = (CreateTable) CCJSqlParserUtil.parse(sql);
+
+        ColumnDefinition colName = stmt.getColumnDefinitions().stream()
+                .filter(col -> col.getColumnName().equals("name"))
+                .findFirst().orElse(null);
+
+        assertNotNull(colName);
+
+        assertEquals("GBK", colName.getColDataType().getCharacterSet());
     }
 }

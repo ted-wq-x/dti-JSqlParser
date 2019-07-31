@@ -12,13 +12,7 @@ package net.sf.jsqlparser.expression.operators.arithmetic;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
 
-/**
- * Modulo expression (a % b).
- */
-public class Modulo extends BinaryExpression {
-
-    public Modulo() {
-    }
+public class IntegerDivision extends BinaryExpression {
 
     @Override
     public void accept(ExpressionVisitor expressionVisitor) {
@@ -27,6 +21,6 @@ public class Modulo extends BinaryExpression {
 
     @Override
     public String getStringExpression() {
-        return "%";
+        return "DIV";
     }
 }
