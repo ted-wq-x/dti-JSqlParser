@@ -9,6 +9,9 @@
  */
 package net.sf.jsqlparser.statement.select;
 
+/**
+ * order by的visitor
+ */
 public interface OrderByVisitor {
 
     void visit(OrderByElement orderBy);

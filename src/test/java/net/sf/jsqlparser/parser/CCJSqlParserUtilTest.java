@@ -1,34 +1,59 @@
-/*-
- * #%L
- * JSQLParser library
- * %%
- * Copyright (C) 2004 - 2019 JSQLParser
- * %%
- * Dual licensed under GNU LGPL 2.1 or Apache License 2.0
- * #L%
- */
 package net.sf.jsqlparser.parser;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.ExpressionVisitorAdapter;
+import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.expression.KeepExpression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
 import net.sf.jsqlparser.expression.operators.arithmetic.Multiplication;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.statement.Block;
+import net.sf.jsqlparser.statement.Commit;
+import net.sf.jsqlparser.statement.SetStatement;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.StatementVisitorAdapter;
 import net.sf.jsqlparser.statement.Statements;
+import net.sf.jsqlparser.statement.UseStatement;
+import net.sf.jsqlparser.statement.alter.Alter;
+import net.sf.jsqlparser.statement.comment.Comment;
+import net.sf.jsqlparser.statement.create.index.CreateIndex;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.create.view.AlterView;
+import net.sf.jsqlparser.statement.create.view.CreateView;
+import net.sf.jsqlparser.statement.delete.Delete;
+import net.sf.jsqlparser.statement.drop.Drop;
+import net.sf.jsqlparser.statement.execute.Execute;
+import net.sf.jsqlparser.statement.insert.Insert;
+import net.sf.jsqlparser.statement.merge.Merge;
+import net.sf.jsqlparser.statement.replace.Replace;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectBody;
+import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
+import net.sf.jsqlparser.statement.select.SetOperationList;
+import net.sf.jsqlparser.statement.select.WithItem;
+import net.sf.jsqlparser.statement.truncate.Truncate;
+import net.sf.jsqlparser.statement.update.Update;
+import net.sf.jsqlparser.statement.upsert.Upsert;
+import net.sf.jsqlparser.statement.values.ValuesStatement;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author toben
+ */
 public class CCJSqlParserUtilTest {
 
     public CCJSqlParserUtilTest() {
@@ -75,18 +100,7 @@ public class CCJSqlParserUtilTest {
 
     @Test(expected = JSQLParserException.class)
     public void testParseExpressionNonPartial() throws Exception {
-        CCJSqlParserUtil.parseExpression("a+", false);
-
-    }
-
-    @Test(expected = JSQLParserException.class)
-    public void testParseExpressionFromStringFail() throws Exception {
-         CCJSqlParserUtil.parse("whatever$");
-    }
-
-    @Test(expected = JSQLParserException.class)
-    public void testParseExpressionFromRaderFail() throws Exception {
-         CCJSqlParserUtil.parse(new StringReader("whatever$"));
+        Expression result = CCJSqlParserUtil.parseExpression("a+", false);
     }
 
     @Test
@@ -99,24 +113,6 @@ public class CCJSqlParserUtilTest {
     public void testParseCondExpression() throws Exception {
         Expression result = CCJSqlParserUtil.parseCondExpression("a+b>5 and c<3");
         assertEquals("a + b > 5 AND c < 3", result.toString());
-    }
-
-    @Test(expected = JSQLParserException.class)
-    public void testParseCondExpressionFail() throws Exception {
-       CCJSqlParserUtil.parseCondExpression(";");
-
-    }
-
-    @Test(expected = JSQLParserException.class)
-    public void testParseFromStreamFail() throws Exception {
-       CCJSqlParserUtil.parse(new ByteArrayInputStream("BLA".getBytes(StandardCharsets.UTF_8)));
-
-    }
-
-    @Test(expected = JSQLParserException.class)
-    public void testParseFromStreamWithEncodingFail() throws Exception {
-       CCJSqlParserUtil.parse(new ByteArrayInputStream("BLA".getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8.name());
-
     }
 
     @Test
@@ -160,34 +156,52 @@ public class CCJSqlParserUtilTest {
                 + "SELECT * FROM dual;\n", result.toString());
     }
 
-    @Test(expected = JSQLParserException.class)
-    public void testParseStatementsFail() throws Exception {
-       CCJSqlParserUtil.parseStatements("select * from dual;WHATEVER!!");
-    }
-
-    @Test(expected = JSQLParserException.class)
-    public void testParseASTFail() throws Exception {
-       CCJSqlParserUtil.parseAST("select * from dual;WHATEVER!!");
-    }
-
     @Test
     public void testParseStatementsIssue691_2() throws Exception {
         Statements result = CCJSqlParserUtil.parseStatements(
-                "select * from dual;\n"
-                + "---test");
-        assertEquals("SELECT * FROM dual;\n", result.toString());
+                "select * from (select name,age from b);"
+               );
+        assertEquals("SELECT * FROM (SELECT name, age FROM b);\n", result.toString());
     }
 
     @Test
-    public void testParseStatementIssue742() throws Exception {
-        Statements result = CCJSqlParserUtil.parseStatements("CREATE TABLE `table_name` (\n" +
-                "  `id` bigint(20) NOT NULL AUTO_INCREMENT,\n" +
-                "  `another_column_id` bigint(20) NOT NULL COMMENT 'column id as sent by SYSTEM',\n" +
-                "  PRIMARY KEY (`id`),\n" +
-                "  UNIQUE KEY `uk_another_column_id` (`another_column_id`)\n" +
-                ")");
-        assertEquals("CREATE TABLE `table_name` (`id` bigint (20) NOT NULL AUTO_INCREMENT, `another_column_id` " +
-                "bigint (20) NOT NULL COMMENT 'column id as sent by SYSTEM', PRIMARY KEY (`id`), UNIQUE KEY `uk_another_column_id` " +
-                "(`another_column_id`));\n", result.toString());
+    public void testFunction() throws JSQLParserException {
+        Statement statement = CCJSqlParserUtil.parse("functionA(funB(funC('aa'),funD(''vv)))");
+        StatementVisitorAdapter statementVisitor = new MyStatementVisitorAdapter();
+        statement.accept(statementVisitor);
+
+    }
+
+
+
+    private static class MyStatementVisitorAdapter extends StatementVisitorAdapter {
+        @Override
+        public void visit(Select select) {
+            SelectBody selectBody = select.getSelectBody();
+            selectBody.accept(new MySelectVisitorAdapter());
+        }
+    }
+
+
+    private static class MySelectVisitorAdapter extends SelectVisitorAdapter {
+        @Override
+        public void visit(PlainSelect plainSelect) {
+        //    TODO 到这里就是完整的select语句
+        }
+
+        @Override
+        public void visit(SetOperationList setOpList) {
+            super.visit(setOpList);
+        }
+
+        @Override
+        public void visit(WithItem withItem) {
+            super.visit(withItem);
+        }
+
+        @Override
+        public void visit(ValuesStatement aThis) {
+            super.visit(aThis);
+        }
     }
 }

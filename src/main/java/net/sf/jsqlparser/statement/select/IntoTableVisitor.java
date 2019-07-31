@@ -11,6 +11,9 @@ package net.sf.jsqlparser.statement.select;
 
 import net.sf.jsqlparser.schema.Table;
 
+/**
+ * insert into 后面的visitor
+ */
 public interface IntoTableVisitor {
 
     void visit(Table tableName);

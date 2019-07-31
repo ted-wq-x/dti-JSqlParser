@@ -9,6 +9,9 @@
  */
 package net.sf.jsqlparser.statement.select;
 
+/**
+ * 针对select字段的visitor
+ */
 public interface SelectItemVisitor {
 
     void visit(AllColumns allColumns);

@@ -11,6 +11,9 @@ package net.sf.jsqlparser.statement.select;
 
 import net.sf.jsqlparser.schema.Table;
 
+/**
+ * from后面语句的解析器
+ */
 public interface FromItemVisitor {
 
     void visit(Table tableName);
