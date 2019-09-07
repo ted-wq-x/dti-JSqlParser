@@ -213,4 +213,10 @@ public class CCJSqlParserUtilTest {
                 + "bigint (20) NOT NULL COMMENT 'column id as sent by SYSTEM', PRIMARY KEY (`id`), UNIQUE KEY `uk_another_column_id` "
                 + "(`another_column_id`));\n", result.toString());
     }
+
+    @Test
+    public void testSortBy() throws JSQLParserException {
+        Statements result = CCJSqlParserUtil.parseStatements("select * from dual sort by name ");
+        assertEquals("SELECT * FROM dual SORT BY name;\n", result.toString());
+    }
 }
