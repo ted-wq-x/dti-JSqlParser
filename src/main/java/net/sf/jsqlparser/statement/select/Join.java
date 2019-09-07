@@ -165,7 +165,7 @@ public class Join extends ASTNodeAccessImpl {
     }
 
     /**
-     * Returns the "USING" list of {@link net.sf.jsqlparser.schema.Column}s (if any)
+     * Returns the "USING" list of {@link Column}s (if any)
      */
     public List<Column> getUsingColumns() {
         return usingColumns;

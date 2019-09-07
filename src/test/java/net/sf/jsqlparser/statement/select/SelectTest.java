@@ -3388,7 +3388,7 @@ public class SelectTest {
 
     @Test
     public void testMultiPartNamesIssue643() throws JSQLParserException {
-        assertSqlCanBeParsedAndDeparsed("SELECT id, bid, pid, devnum, pointdesc, sysid, zone, sort FROM fault ORDER BY id DESC LIMIT ?, ?");
+        assertSqlCanBeParsedAndDeparsed("SELECT id, bid, pid, devnum, pointdesc, sysid, zone, `sort` FROM fault ORDER BY id DESC LIMIT ?, ?");
     }
 
     @Test

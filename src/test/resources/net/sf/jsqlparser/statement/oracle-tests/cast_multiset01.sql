@@ -9,7 +9,7 @@
 ---
 select t1.department_id, t2.* 
    from hr_info t1, 
-   table
+   tableName
    (
     cast
     (

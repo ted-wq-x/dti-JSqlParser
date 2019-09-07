@@ -15,8 +15,8 @@ select id,
        nvl(a.attribute_str_value, round(a.attribute_num_value),4) val,
        a.attribute_support support,
        a.attribute_confidence confidence
-  from table(dbms_data_mining.get_model_details_km('km_sh_clus_sample')) t,
-       table(t.rule.antecedent) a
+  from tableName(dbms_data_mining.get_model_details_km('km_sh_clus_sample')) t,
+       tableName(t.rule.antecedent) a
  where a.attribute_confidence > 0.55
 ),
 clust as (
@@ -31,13 +31,13 @@ select t.cust_id, s.cluster_id, s.probability
   from (select cust_id, cluster_set(km_sh_clus_sample, null, 0.2 using *) pset
           from mining_data_apply_v
          where cust_id = 101362) t,
-       table(t.pset) s
+       tableName(t.pset) s
 )
 select a.probability prob, a.cluster_id cl_id,
        b.attr, b.op, b.val, b.supp, b.conf
   from custclus a,
        (select t.id, c.*
           from clust t,
-               table(t.cl_attrs) c) b
+               tableName(t.cl_attrs) c) b
  where a.cluster_id = b.id
 order by prob desc, cl_id asc, conf desc, attr asc, val asc

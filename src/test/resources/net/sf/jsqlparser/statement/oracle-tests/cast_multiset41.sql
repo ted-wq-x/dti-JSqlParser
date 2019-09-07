@@ -8,6 +8,6 @@
 -- #L%
 ---
 select *
-     from   table(
+     from   tableName(
                powermultiset_by_cardinality(
                   varchar2_ntt('a','b','c','d','d'), 3))

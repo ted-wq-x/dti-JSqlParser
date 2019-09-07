@@ -20,7 +20,7 @@ as
 	dba_hist_database_instance di ,
 	sys.wrh$_sysmetric_history sh ,
 	bsln_metric_defaults md ,
-	table(:b1 ) ot
+	tableName(:b1 ) ot
 	where sn.dbid = :b6
 	and sn.snap_id between :b5 and :b4
 	and di.dbid = sn.dbid

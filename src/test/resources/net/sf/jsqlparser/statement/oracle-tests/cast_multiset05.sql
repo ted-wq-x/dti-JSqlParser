@@ -9,7 +9,7 @@
 ---
 select *
 from
-	table
+	tableName
 	(
 		function_name()
 	)

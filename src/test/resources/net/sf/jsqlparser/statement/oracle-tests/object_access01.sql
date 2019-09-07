@@ -17,7 +17,7 @@ extractvalue(value(t), '/select_list_item/rsize') rsize,
 extractvalue(value(t), '/select_list_item/rowcnt') rowcnt,
 extract(value(t), '/select_list_item/hash_val').getclobval() hashval
 from
-table
+tableName
 (
 	xmlsequence
 	(

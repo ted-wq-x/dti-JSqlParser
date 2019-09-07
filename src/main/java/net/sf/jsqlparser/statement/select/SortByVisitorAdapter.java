@@ -9,13 +9,9 @@
  */
 package net.sf.jsqlparser.statement.select;
 
-/**
- * 行列转换，sql有pivot关键字
- */
-public interface PivotVisitor {
+public class SortByVisitorAdapter implements SortByVisitor {
+    @Override
+    public void visit(SortByElement sortBy) {
 
-    void visit(Pivot pivot);
-
-    void visit(PivotXml pivot);
-
+    }
 }

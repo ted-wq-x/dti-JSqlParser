@@ -66,7 +66,7 @@ public class Replace implements Statement {
     }
 
     /**
-     * A list of {@link net.sf.jsqlparser.expression.Expression}s (from a "REPLACE mytab SET
+     * A list of {@link Expression}s (from a "REPLACE mytab SET
      * col1=exp1, col2=exp2"). <br>
      * it is null in case of a "REPLACE mytab (col1, col2) [...]"
      */

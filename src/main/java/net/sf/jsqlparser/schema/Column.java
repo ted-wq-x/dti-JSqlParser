@@ -58,7 +58,7 @@ public final class Column extends ASTNodeAccessImpl implements Expression, Multi
      * But because the inference is local, such object will not know that {@code t} is
      * just an alias for {@code Foo}.
      *
-     * @return an instance of {@link net.sf.jsqlparser.schema.Table} representing the
+     * @return an instance of {@link Table} representing the
      *          table this column does belong to, if it can be inferred. Can be {@code null}.
      */
     public Table getTable() {

@@ -561,9 +561,13 @@ public class CreateTableTest {
         assertSqlCanBeParsedAndDeparsed(sql);
         CreateTable stmt = (CreateTable) CCJSqlParserUtil.parse(sql);
 
-        ColumnDefinition colName = stmt.getColumnDefinitions().stream()
-                .filter(col -> col.getColumnName().equals("name"))
-                .findFirst().orElse(null);
+        ColumnDefinition colName=null;
+        for (ColumnDefinition col : stmt.getColumnDefinitions()) {
+            if (col.getColumnName().equals("name")){
+                colName=col;
+                break;
+            }
+        }
 
         assertNotNull(colName);
 

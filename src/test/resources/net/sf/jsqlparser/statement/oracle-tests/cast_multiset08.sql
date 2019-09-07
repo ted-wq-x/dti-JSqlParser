@@ -7,4 +7,4 @@
 -- Dual licensed under GNU LGPL 2.1 or Apache License 2.0
 -- #L%
 ---
-select * from table (cast (f_int_date_varchar2() as table_int_date_varchar2))
+select * from tableName (cast (f_int_date_varchar2() as table_int_date_varchar2))

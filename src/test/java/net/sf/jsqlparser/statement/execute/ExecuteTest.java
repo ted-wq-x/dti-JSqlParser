@@ -45,7 +45,7 @@ public class ExecuteTest {
     /**
      * Test of accept method, of class Execute.
      *
-     * @throws net.sf.jsqlparser.JSQLParserException
+     * @throws JSQLParserException
      */
     @Test
     public void testAcceptExecute() throws JSQLParserException {

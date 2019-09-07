@@ -9,10 +9,13 @@
  */
 package net.sf.jsqlparser.expression;
 
+import java.util.List;
+
 public class Alias {
 
     private String name;
     private boolean useAs = true;
+    private List<String> udafColumns;
 
     public Alias(String name) {
         this.name = name;
@@ -21,6 +24,15 @@ public class Alias {
     public Alias(String name, boolean useAs) {
         this.name = name;
         this.useAs = useAs;
+    }
+
+    public Alias(boolean useAs, List<String> udafColumns) {
+        this.useAs = useAs;
+        this.udafColumns = udafColumns;
+    }
+
+    public List<String> getUdafColumns() {
+        return udafColumns;
     }
 
     public String getName() {
@@ -41,6 +53,26 @@ public class Alias {
 
     @Override
     public String toString() {
-        return (useAs ? " AS " : " ") + name;
+
+        StringBuilder buffer = new StringBuilder();
+        if (useAs) {
+            buffer.append(" AS ");
+        }else {
+            buffer.append(" ");
+        }
+        if (udafColumns==null||udafColumns.size()==0) {
+            buffer.append(name);
+        } else {
+            buffer.append("(");
+            for (int i = 0; i < udafColumns.size(); i++) {
+                if (i > 0) {
+                    buffer.append(",");
+                }
+                buffer.append(udafColumns.get(i));
+            }
+            buffer.append(")");
+        }
+
+        return buffer.toString();
     }
 }

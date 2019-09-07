@@ -22,7 +22,7 @@ public class TimestampValue extends ASTNodeAccessImpl implements Expression {
     private char quotation = '\'';
     public TimestampValue(String value) {
         if (value == null) {
-            throw new java.lang.IllegalArgumentException("null string");
+            throw new IllegalArgumentException("null string");
         } else {
             if (value.charAt(0) == quotation) {
                 this.value = Timestamp.valueOf(value.substring(1, value.length() - 1));

@@ -9,15 +9,16 @@
  */
 package net.sf.jsqlparser.statement.select;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.OracleHierarchicalExpression;
 import net.sf.jsqlparser.expression.OracleHint;
 import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
 import net.sf.jsqlparser.schema.Table;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
 
@@ -29,6 +30,7 @@ public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
     private Expression where;
     private GroupByElement groupBy;
     private List<OrderByElement> orderByElements;
+    private List<SortByElement> sortByElements;
     private Expression having;
     private Limit limit;
     private Offset offset;
@@ -120,6 +122,14 @@ public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
 
     public void setOrderByElements(List<OrderByElement> orderByElements) {
         this.orderByElements = orderByElements;
+    }
+
+    public List<SortByElement> getSortByElements() {
+        return sortByElements;
+    }
+
+    public void setSortByElements(List<SortByElement> sortByElements) {
+        this.sortByElements = sortByElements;
     }
 
     public Limit getLimit() {
@@ -325,7 +335,7 @@ public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
 
         if (intoTables != null) {
             sql.append(" INTO ");
-            for (Iterator<Table> iter = intoTables.iterator(); iter.hasNext();) {
+            for (Iterator<Table> iter = intoTables.iterator(); iter.hasNext(); ) {
                 sql.append(iter.next().toString());
                 if (iter.hasNext()) {
                     sql.append(", ");
@@ -362,6 +372,7 @@ public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
             if (having != null) {
                 sql.append(" HAVING ").append(having);
             }
+            sql.append(getFormatedList(sortByElements, "SORT BY", true, false));
             sql.append(orderByToString(oracleSiblings, orderByElements));
             if (limit != null) {
                 sql.append(limit);
@@ -431,12 +442,12 @@ public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
     /**
      * List the toString out put of the objects in the List comma separated. If the List is null or
      * empty an empty string is returned.
-     *
+     * <p>
      * The same as getStringList(list, true, false)
      *
-     * @see #getStringList(List, boolean, boolean)
      * @param list list of objects with toString methods
      * @return comma separated list of the elements in the list
+     * @see #getStringList(List, boolean, boolean)
      */
     public static String getStringList(List<?> list) {
         return getStringList(list, true, false);
@@ -446,8 +457,8 @@ public class PlainSelect extends ASTNodeAccessImpl implements SelectBody {
      * List the toString out put of the objects in the List that can be comma separated. If the List
      * is null or empty an empty string is returned.
      *
-     * @param list list of objects with toString methods
-     * @param useComma true if the list has to be comma separated
+     * @param list        list of objects with toString methods
+     * @param useComma    true if the list has to be comma separated
      * @param useBrackets true if the list has to be enclosed in brackets
      * @return comma separated list of the elements in the list
      */

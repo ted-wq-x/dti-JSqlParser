@@ -10,7 +10,7 @@
 select 
    listagg(column_value, ',') within group (order by column_value) 
 from 
-   table(
+   tableName(
       cast(
          multiset(
             select 'one' from dual

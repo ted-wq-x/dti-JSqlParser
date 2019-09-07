@@ -124,7 +124,7 @@ public class TablesNamesFinderTest {
 
         String sql = "SELECT * FROM MY_TABLE1, MY_TABLE2, (SELECT * FROM MY_TABLE3) LEFT OUTER JOIN MY_TABLE4 "
                 + " WHERE ID = (SELECT MAX(ID) FROM MY_TABLE5) AND ID2 IN (SELECT * FROM MY_TABLE6)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         // now you should use a class that implements StatementVisitor to decide what to
         // do
@@ -148,7 +148,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListWithAlias() throws Exception {
         String sql = "SELECT * FROM MY_TABLE1 as ALIAS_TABLE1";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Select selectStatement = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -160,7 +160,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListWithStmt() throws Exception {
         String sql = "WITH TESTSTMT as (SELECT * FROM MY_TABLE1 as ALIAS_TABLE1) SELECT * FROM TESTSTMT";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Select selectStatement = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -172,7 +172,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListWithLateral() throws Exception {
         String sql = "SELECT * FROM MY_TABLE1, LATERAL(select a from MY_TABLE2) as AL";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Select selectStatement = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -185,7 +185,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromDelete() throws Exception {
         String sql = "DELETE FROM MY_TABLE1 as AL WHERE a = (SELECT a from MY_TABLE2)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Delete deleteStatement = (Delete) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -198,7 +198,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromDelete2() throws Exception {
         String sql = "DELETE FROM MY_TABLE1";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Delete deleteStatement = (Delete) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -218,7 +218,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromDeleteWithJoin() throws Exception {
         String sql = "DELETE t1, t2 FROM MY_TABLE1 t1 JOIN MY_TABLE2 t2 ON t1.id = t2.id";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Delete deleteStatement = (Delete) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -231,7 +231,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromInsert() throws Exception {
         String sql = "INSERT INTO MY_TABLE1 (a) VALUES ((SELECT a from MY_TABLE2 WHERE a = 1))";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Insert insertStatement = (Insert) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -244,7 +244,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromInsertValues() throws Exception {
         String sql = "INSERT INTO MY_TABLE1 (a) VALUES (5)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Insert insertStatement = (Insert) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -256,7 +256,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromReplace() throws Exception {
         String sql = "REPLACE INTO MY_TABLE1 (a) VALUES ((SELECT a from MY_TABLE2 WHERE a = 1))";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Replace replaceStatement = (Replace) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -269,7 +269,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromUpdate() throws Exception {
         String sql = "UPDATE MY_TABLE1 SET a = (SELECT a from MY_TABLE2 WHERE a = 1)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Update updateStatement = (Update) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -282,7 +282,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromUpdate2() throws Exception {
         String sql = "UPDATE MY_TABLE1 SET a = 5 WHERE 0 < (SELECT COUNT(b) FROM MY_TABLE3)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Update updateStatement = (Update) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -295,7 +295,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListFromUpdate3() throws Exception {
         String sql = "UPDATE MY_TABLE1 SET a = 5 FROM MY_TABLE1 INNER JOIN MY_TABLE2 on MY_TABLE1.C = MY_TABLE2.D WHERE 0 < (SELECT COUNT(b) FROM MY_TABLE3)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Update updateStatement = (Update) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -309,7 +309,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testCmplxSelectProblem() throws Exception {
         String sql = "SELECT cid, (SELECT name FROM tbl0 WHERE tbl0.id = cid) AS name, original_id AS bc_id FROM tbl WHERE crid = ? AND user_id is null START WITH ID = (SELECT original_id FROM tbl2 WHERE USER_ID = ?) CONNECT BY prior parent_id = id AND rownum = 1";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Select selectStatement = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -323,7 +323,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testInsertSelect() throws Exception {
         String sql = "INSERT INTO mytable (mycolumn) SELECT mycolumn FROM mytable2";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Insert insertStatement = (Insert) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -336,7 +336,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testCreateSelect() throws Exception {
         String sql = "CREATE TABLE mytable AS SELECT mycolumn FROM mytable2";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         CreateTable createTable = (CreateTable) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -392,7 +392,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testGetTableListIssue194() throws Exception {
         String sql = "SELECT 1";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Select selectStatement = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -446,7 +446,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testUpsertValues() throws Exception {
         String sql = "UPSERT INTO MY_TABLE1 (a) VALUES (5)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Upsert insertStatement = (Upsert) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -458,7 +458,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testUpsertSelect() throws Exception {
         String sql = "UPSERT INTO mytable (mycolumn) SELECT mycolumn FROM mytable2";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Upsert insertStatement = (Upsert) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -509,7 +509,7 @@ public class TablesNamesFinderTest {
     @Test
     public void testSelectHavingSubquery() throws Exception {
         String sql = "SELECT * FROM TABLE1 GROUP BY COL1 HAVING SUM(COL2) > (SELECT COUNT(*) FROM TABLE2)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         Select selectStmt = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
