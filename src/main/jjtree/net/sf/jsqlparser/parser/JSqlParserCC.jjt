@@ -11,7 +11,7 @@
 options{
     IGNORE_CASE = true ;
     STATIC = false;
-    DEBUG_PARSER = true;
+    DEBUG_PARSER = false;
     DEBUG_LOOKAHEAD = false;
     DEBUG_TOKEN_MANAGER = false;
 	CACHE_TOKENS = false;
@@ -52,6 +52,7 @@ import net.sf.jsqlparser.statement.update.*;
 import net.sf.jsqlparser.statement.upsert.*;
 import net.sf.jsqlparser.statement.merge.*;
 import net.sf.jsqlparser.statement.values.*;
+import net.sf.jsqlparser.statement.from.*;
 import java.util.*;
 
 /**
@@ -435,6 +436,8 @@ Statement SingleStatement() :
         stm = Describe()
         |
         stm = Explain()
+        |
+        stm = MultiInsertFrom()
         )
 		{ return stm; }
     } catch (ParseException e) {
@@ -723,6 +726,74 @@ List<SelectExpressionItem> ListExpressionItem():
    ("," item = SelectExpressionItem() {retval.add(item);} )*
    { return retval; }
 }
+
+
+//multi-insert start
+
+MultiInsertFrom MultiInsertFrom():
+{
+   MultiInsertFrom multiInsertFrom=new MultiInsertFrom();
+   Table table=null;
+   List<MultiInsert> multiInsertList=new ArrayList<MultiInsert>();
+   MultiInsert multiInsert=null;
+}
+{
+
+    <K_FROM>{
+        table=Table();
+    }
+
+   ( multiInsert=MultiInsert(){
+    if (multiInsert!=null){
+        multiInsertList.add(multiInsert);
+    }
+    })+
+    {
+     multiInsertFrom.setTable(table);
+     multiInsertFrom.setMultiInserts(multiInsertList);
+     return multiInsertFrom;
+    }
+
+}
+
+MultiInsert MultiInsert():
+{
+    MultiInsert  multiInsert=new MultiInsert();
+    Table table=null;
+    MultiInsertPlainSelect plainSelect=null;
+    String name=null;
+    boolean useAs=false;
+}
+{
+ <K_INSERT>
+    [<K_INTO>] table=Table()
+    [ [<K_AS> { useAs = true; } ] name=RelObjectNameWithoutValue() { table.setAlias(new Alias(name,useAs)); }]
+     plainSelect = multiInsertPlainSelect()
+    {
+    multiInsert.setTable(table);
+    multiInsert.setPlainSelect(plainSelect);
+    return multiInsert;
+    }
+}
+
+
+MultiInsertPlainSelect multiInsertPlainSelect():{
+    List<SelectItem> selectItems=new ArrayList<SelectItem>();
+    Expression where;
+    MultiInsertPlainSelect select=new MultiInsertPlainSelect();
+}
+{
+  <K_SELECT> selectItems=SelectItemsList()
+  [ where=WhereClause() { select.setWhere(where); }]
+
+{
+select.setSelectItems(selectItems);
+return select;
+}
+}
+
+//multi-insert end
+
 
 Insert Insert():
 {

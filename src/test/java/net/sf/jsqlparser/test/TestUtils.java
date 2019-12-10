@@ -9,11 +9,12 @@
  */
 package net.sf.jsqlparser.test;
 
-import java.util.regex.Pattern;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.ExpressionVisitorAdapter;
 import net.sf.jsqlparser.expression.OracleHint;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
@@ -22,12 +23,16 @@ import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import net.sf.jsqlparser.util.deparser.SelectDeParser;
 import net.sf.jsqlparser.util.deparser.StatementDeParser;
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
- *
  * @author toben
  */
 public class TestUtils {
@@ -44,7 +49,7 @@ public class TestUtils {
      *
      * @param statement
      * @param laxDeparsingCheck removes all linefeeds from the original and removes all double
-     * spaces. The check is caseinsensitive.
+     *                          spaces. The check is caseinsensitive.
      * @throws JSQLParserException
      */
     public static void assertSqlCanBeParsedAndDeparsed(String statement, boolean laxDeparsingCheck) throws JSQLParserException {
@@ -74,12 +79,6 @@ public class TestUtils {
         } else {
             return sql;
         }
-    }
-
-    @Test
-    public void testBuildSqlString() {
-        assertEquals("select col from test", buildSqlString("   SELECT   col FROM  \r\n \t  TEST \n", true));
-        assertEquals("select  col  from test", buildSqlString("select  col  from test", false));
     }
 
     public static void assertExpressionCanBeDeparsedAs(final Expression parsed, String expression) {
@@ -120,4 +119,25 @@ public class TestUtils {
         }
     }
 
+    @Test
+    public void testBuildSqlString() {
+        assertEquals("select col from test", buildSqlString("   SELECT   col FROM  \r\n \t  TEST \n", true));
+        assertEquals("select  col  from test", buildSqlString("select  col  from test", false));
+    }
+
+    @Test
+    public void go() throws JSQLParserException {
+        System.out.println(Float.compare(0.0f, 0f));
+        System.out.println("0x0018");
+    }
+
+
+    static class TT extends ExpressionVisitorAdapter {
+        List<Column> list = new ArrayList<>();
+
+        @Override
+        public void visit(Column column) {
+            list.add(column);
+        }
+    }
 }

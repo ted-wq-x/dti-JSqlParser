@@ -18,6 +18,7 @@ import net.sf.jsqlparser.statement.create.view.CreateView;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.drop.Drop;
 import net.sf.jsqlparser.statement.execute.Execute;
+import net.sf.jsqlparser.statement.from.MultiInsertFrom;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.merge.Merge;
 import net.sf.jsqlparser.statement.replace.Replace;
@@ -77,7 +78,9 @@ public interface StatementVisitor {
 
     void visit(DescribeStatement describe);
 
-    public void visit(ExplainStatement aThis);
+    void visit(ExplainStatement aThis);
 
-    public void visit(ShowStatement aThis);
+    void visit(ShowStatement aThis);
+
+    void visit(MultiInsertFrom multiInsertFrom);
 }

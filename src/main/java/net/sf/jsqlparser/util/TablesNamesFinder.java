@@ -11,6 +11,7 @@ package net.sf.jsqlparser.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import net.sf.jsqlparser.expression.AllComparisonExpression;
 import net.sf.jsqlparser.expression.AnalyticExpression;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;
@@ -75,6 +76,9 @@ import net.sf.jsqlparser.statement.create.view.CreateView;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.drop.Drop;
 import net.sf.jsqlparser.statement.execute.Execute;
+import net.sf.jsqlparser.statement.from.MultiInsert;
+import net.sf.jsqlparser.statement.from.MultiInsertFrom;
+import net.sf.jsqlparser.statement.from.MultiInsertPlainSelect;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.merge.Merge;
 import net.sf.jsqlparser.statement.replace.Replace;
@@ -104,7 +108,7 @@ import net.sf.jsqlparser.statement.values.ValuesStatement;
 
 /**
  * Find all used tables within an select statement.
- *
+ * <p>
  * Override extractTableName method to modify the extracted table names (e.g. without schema).
  */
 public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, ExpressionVisitor, ItemsListVisitor, SelectItemVisitor, StatementVisitor {
@@ -845,5 +849,20 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
     @Override
     public void visit(SimilarToExpression expr) {
         visitBinaryExpression(expr);
+    }
+
+    @Override
+    public void visit(MultiInsertFrom multiInsertFrom) {
+        multiInsertFrom.getTable().accept(this);
+        for (MultiInsert multiInsert : multiInsertFrom.getMultiInserts()) {
+            multiInsert.getTable().accept(this);
+            MultiInsertPlainSelect plainSelect = multiInsert.getPlainSelect();
+            for (SelectItem selectItem : plainSelect.getSelectItems()) {
+                selectItem.accept(this);
+            }
+            if (plainSelect.getWhere() != null) {
+                plainSelect.getWhere().accept(this);
+            }
+        }
     }
 }
