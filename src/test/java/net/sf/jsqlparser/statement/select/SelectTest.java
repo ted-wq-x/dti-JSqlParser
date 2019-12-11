@@ -3767,4 +3767,9 @@ public class SelectTest {
     public void testMultiInsert5() throws JSQLParserException {
         assertSqlCanBeParsedAndDeparsed("FROM a INSERT INTO b SELECT name INSERT INTO a SELECT name");
     }
+
+    @Test
+    public void testMultiInsert6() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("FROM a AS v INSERT INTO b SELECT name INSERT INTO a SELECT name");
+    }
 }

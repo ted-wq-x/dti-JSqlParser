@@ -734,6 +734,7 @@ MultiInsertFrom MultiInsertFrom():
 {
    MultiInsertFrom multiInsertFrom=new MultiInsertFrom();
    Table table=null;
+   Alias alias=null;
    List<MultiInsert> multiInsertList=new ArrayList<MultiInsert>();
    MultiInsert multiInsert=null;
 }
@@ -742,6 +743,7 @@ MultiInsertFrom MultiInsertFrom():
     <K_FROM>{
         table=Table();
     }
+    [ alias=Alias() { table.setAlias(alias); } ]
 
    ( multiInsert=MultiInsert(){
     if (multiInsert!=null){
