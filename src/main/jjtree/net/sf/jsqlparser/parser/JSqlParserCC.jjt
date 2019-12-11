@@ -765,31 +765,31 @@ MultiInsert MultiInsert():
     boolean useAs=false;
 }
 {
- <K_INSERT>
+    <K_INSERT>
     [<K_INTO>] table=Table()
     [ [<K_AS> { useAs = true; } ] name=RelObjectNameWithoutValue() { table.setAlias(new Alias(name,useAs)); }]
      plainSelect = multiInsertPlainSelect()
     {
-    multiInsert.setTable(table);
-    multiInsert.setPlainSelect(plainSelect);
-    return multiInsert;
+        multiInsert.setTable(table);
+        multiInsert.setPlainSelect(plainSelect);
+        return multiInsert;
     }
 }
 
 
 MultiInsertPlainSelect multiInsertPlainSelect():{
-    List<SelectItem> selectItems=new ArrayList<SelectItem>();
+    List<SelectItem> selectItems=null;
     Expression where;
     MultiInsertPlainSelect select=new MultiInsertPlainSelect();
 }
 {
-  <K_SELECT> selectItems=SelectItemsList()
-  [ where=WhereClause() { select.setWhere(where); }]
+    <K_SELECT> selectItems=SelectItemsList()
+    [ where=WhereClause() { select.setWhere(where); }]
 
-{
-select.setSelectItems(selectItems);
-return select;
-}
+    {
+        select.setSelectItems(selectItems);
+        return select;
+    }
 }
 
 //multi-insert end
@@ -1143,7 +1143,7 @@ String RelObjectNameWithoutValue() :
       | tk=<K_OPEN> | tk=<K_OVER> | tk=<K_PERCENT> | tk=<K_PRIOR>
       | tk=<K_SEPARATOR> | tk=<K_NO> | tk=<K_ACTION> | tk=<K_CASCADE> | tk=<K_END>
       | tk=<K_TABLE> | tk=<K_DATETIMELITERAL> | tk=<K_COMMIT> | tk=<K_PRECISION>
-      | tk=<K_INSERT> | tk=<K_INDEX> | tk=<K_PRIMARY> | tk=<K_ENABLE>
+      | tk=<K_INDEX> | tk=<K_PRIMARY> | tk=<K_ENABLE>
 	  | tk=<K_UNSIGNED>
       | tk=<K_TEMP> | tk=<K_TEMPORARY> | tk=<K_TYPE> | tk=<K_ISNULL> 
 	  | tk=<K_ZONE> | tk=<K_COLUMNS> | tk=<K_DESCRIBE> | tk=<K_FN> | tk=<K_PATH>
@@ -1160,7 +1160,7 @@ Normal names.
 String RelObjectName() :
 {    Token tk = null; String result = null; }
 {
-    (result = RelObjectNameWithoutValue() | tk=<K_TOP> | tk=<K_VALUE> | tk=<K_VALUES> | tk=<K_INTERVAL>)
+    (result = RelObjectNameWithoutValue() | tk=<K_TOP> | tk=<K_VALUE> | tk=<K_VALUES> | tk=<K_INTERVAL> | tk=<K_INSERT>)
 
     { 
 		if (tk!=null) result=tk.image;

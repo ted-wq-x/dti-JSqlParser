@@ -11,6 +11,7 @@ package net.sf.jsqlparser.statement.select;
 
 import java.io.*;
 import java.util.*;
+
 import net.sf.jsqlparser.*;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.arithmetic.*;
@@ -18,14 +19,18 @@ import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.*;
 import net.sf.jsqlparser.schema.*;
 import net.sf.jsqlparser.statement.*;
+
 import static net.sf.jsqlparser.test.TestUtils.*;
+
 import org.apache.commons.io.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -34,10 +39,9 @@ import org.junit.rules.TestName;
 
 public class SelectTest {
 
+    private final CCJSqlParserManager parserManager = new CCJSqlParserManager();
     @Rule
     public TestName name = new TestName();
-
-    private final CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
     @Before
     public void setup() {
@@ -2063,7 +2067,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed(stmt);
     }
 
-//    @Test
+    //    @Test
 //    public void testExtractFromIssue673() throws JSQLParserException {
 //        String stmt = "select EXTRACT(DAY FROM (SYSDATE - to_date('20180101', 'YYYYMMDD' ) ) DAY TO SECOND) from dual";
 //        assertSqlCanBeParsedAndDeparsed(stmt);
@@ -2242,7 +2246,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed(stmt);
     }
 
-//    @Test
+    //    @Test
 //    public void testMultiValueIn3() throws JSQLParserException {
 //        String stmt = "SELECT * FROM mytable WHERE (SSN,SSM) IN (('11111111111111', '22222222222222'))";
 //        assertSqlCanBeParsedAndDeparsed(stmt);
@@ -2518,10 +2522,10 @@ public class SelectTest {
 
         //The following staments can be parsed but not deparsed
         for (String statement : new String[]{
-            "SELECT doc->'site_name' FROM websites WHERE doc @> '{\"tags\":[{\"term\":\"paris\"}, {\"term\":\"food\"}]}'",
-            "SELECT * FROM sales where sale ->'items' @> '[{\"count\":0}]'",
-            "SELECT * FROM sales where sale ->'items' ? 'name'",
-            "SELECT * FROM sales where sale ->'items' -# 'name'"
+                "SELECT doc->'site_name' FROM websites WHERE doc @> '{\"tags\":[{\"term\":\"paris\"}, {\"term\":\"food\"}]}'",
+                "SELECT * FROM sales where sale ->'items' @> '[{\"count\":0}]'",
+                "SELECT * FROM sales where sale ->'items' ? 'name'",
+                "SELECT * FROM sales where sale ->'items' -# 'name'"
         }) {
             Select select = (Select) parserManager.parse(new StringReader(statement));
             assertStatementCanBeDeparsedAs(select, statement, true);
@@ -2911,7 +2915,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed("SELECT CAST(contact_id AS SIGNED INTEGER) FROM contact WHERE contact_id = 20");
     }
 
-//    @Test
+    //    @Test
 //    public void testWhereIssue240_notBoolean() {
 //        try {
 //            CCJSqlParserUtil.parse("SELECT count(*) FROM mytable WHERE 5");
@@ -3050,7 +3054,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed("select * from (pg_catalog.pg_class c inner join pg_catalog.pg_namespace n on n.oid = c.relnamespace and c.relname = 'business' and n.nspname = 'public') inner join pg_catalog.pg_attribute a on (not a.attisdropped) and a.attnum > 0 and a.attrelid = c.oid", true);
     }
 
-//    @Test public void testProblemIssue377() throws Exception {
+    //    @Test public void testProblemIssue377() throws Exception {
 //        try {
 //            assertSqlCanBeParsedAndDeparsed("select 'yelp'::name as pktable_cat, n2.nspname as pktable_schem, c2.relname as pktable_name, a2.attname as pkcolumn_name, 'yelp'::name as fktable_cat, n1.nspname as fktable_schem, c1.relname as fktable_name, a1.attname as fkcolumn_name, i::int2 as key_seq, case ref.confupdtype when 'c' then 0::int2 when 'n' then 2::int2 when 'd' then 4::int2 when 'r' then 1::int2 else 3::int2 end as update_rule, case ref.confdeltype when 'c' then 0::int2 when 'n' then 2::int2 when 'd' then 4::int2 when 'r' then 1::int2 else 3::int2 end as delete_rule, ref.conname as fk_name, cn.conname as pk_name, case when ref.condeferrable then case when ref.condeferred then 5::int2 else 6::int2 end else 7::int2 end as deferrablity from ((((((( (select cn.oid, conrelid, conkey, confrelid, confkey, generate_series(array_lower(conkey, 1), array_upper(conkey, 1)) as i, confupdtype, confdeltype, conname, condeferrable, condeferred from pg_catalog.pg_constraint cn, pg_catalog.pg_class c, pg_catalog.pg_namespace n where contype = 'f' and conrelid = c.oid and relname = 'business' and n.oid = c.relnamespace and n.nspname = 'public' ) ref inner join pg_catalog.pg_class c1 on c1.oid = ref.conrelid) inner join pg_catalog.pg_namespace n1 on n1.oid = c1.relnamespace) inner join pg_catalog.pg_attribute a1 on a1.attrelid = c1.oid and a1.attnum = conkey[i]) inner join pg_catalog.pg_class c2 on c2.oid = ref.confrelid) inner join pg_catalog.pg_namespace n2 on n2.oid = c2.relnamespace) inner join pg_catalog.pg_attribute a2 on a2.attrelid = c2.oid and a2.attnum = confkey[i]) left outer join pg_catalog.pg_constraint cn on cn.conrelid = ref.confrelid and cn.contype = 'p') order by ref.oid, ref.i", true);
 //        } catch (Exception ex) {
@@ -3103,7 +3107,7 @@ public class SelectTest {
         assertEquals("wait time should be 60", waitTime, 60L);
     }
 
-//    @Test public void testSubSelectFailsIssue394() throws JSQLParserException {
+    //    @Test public void testSubSelectFailsIssue394() throws JSQLParserException {
 //        assertSqlCanBeParsedAndDeparsed("select aa.* , t.* from accenter.all aa, (select a.* from pacioli.emc_plan a) t");
 //    }
 //    
@@ -3290,7 +3294,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed("SELECT * FROM a JOIN (b JOIN c ON b.id = c.id) ON a.id = c.id");
     }
 
-//    @Test public void testJoinerExpressionIssue596_2() throws JSQLParserException {
+    //    @Test public void testJoinerExpressionIssue596_2() throws JSQLParserException {
 //        assertSqlCanBeParsedAndDeparsed("SELECT * FROM a JOIN b JOIN c ON b.id = c.id ON a.id = c.id");
 //    }
     @Test
@@ -3376,7 +3380,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed("SELECT @@sessions.tx_read_only");
     }
 
-//    Teradata allows SEL to be used in place of SELECT
+    //    Teradata allows SEL to be used in place of SELECT
 //    Deparse to the non-contracted form
     @Test
     public void testSelContraction() throws JSQLParserException {
@@ -3486,7 +3490,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed("SELECT '|' + person_name FROM person JOIN person_group ON person.person_id = person_group.person_id WHERE person_group.group_id = 1 FOR XML PATH('')");
     }
 
-//    @Test
+    //    @Test
 //    public void testForXmlPath2() throws JSQLParserException {
 //        assertSqlCanBeParsedAndDeparsed("SELECT ( STUFF( (SELECT '|' + person_name FROM person JOIN person_group ON person.person_id = person_group.person_id WHERE person_group.group_id = 1 FOR XML PATH(''), TYPE).value('.', 'varchar(max)'),1,1,'')) AS person_name");
 //    }
@@ -3500,7 +3504,7 @@ public class SelectTest {
         assertSqlCanBeParsedAndDeparsed("SELECT u.name COLLATE Latin1_General_CI_AS AS User FROM users u");
     }
 
-//    @Test
+    //    @Test
 //    public void testIntervalExpression() throws JSQLParserException {
 //        assertSqlCanBeParsedAndDeparsed("SELECT count(emails.id) FROM emails WHERE (emails.date_entered + 30 DAYS) > CURRENT_DATE");
 //    }
@@ -3737,5 +3741,25 @@ public class SelectTest {
     @Test
     public void testEmptyDoubleQuotes_2() throws JSQLParserException {
         assertSqlCanBeParsedAndDeparsed("SELECT * FROM mytable WHERE col = \" \"");
+    }
+
+    @Test
+    public void testMultiInsert1() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("FROM a INSERT INTO b SELECT *");
+    }
+
+    @Test
+    public void testMultiInsert2() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("FROM a INSERT INTO b SELECT * INSERT INTO a SELECT *");
+    }
+
+    @Test
+    public void testMultiInsert3() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("FROM a INSERT INTO b SELECT name AS name1 INSERT INTO a SELECT *");
+    }
+
+    @Test
+    public void testMultiInsert4() throws JSQLParserException {
+        assertSqlCanBeParsedAndDeparsed("FROM a INSERT INTO b SELECT name AS name1 INSERT INTO a SELECT * WHERE age > 22");
     }
 }
