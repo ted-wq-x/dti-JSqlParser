@@ -10,6 +10,7 @@
 1. 添加sort by语法
 1. JDK版本改为1.7
 1. 添加多路输出语法
+1. 删除对groupConcat的特殊解析
 
 ### Sort By 语意
 

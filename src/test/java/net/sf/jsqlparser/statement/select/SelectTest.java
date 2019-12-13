@@ -2662,11 +2662,6 @@ public class SelectTest {
     }
 
     @Test
-    public void testGroupConcat() throws JSQLParserException {
-        assertSqlCanBeParsedAndDeparsed("SELECT student_name, GROUP_CONCAT(DISTINCT test_score ORDER BY test_score DESC SEPARATOR ' ') FROM student GROUP BY student_name");
-    }
-
-    @Test
     public void testRowConstructor1() throws JSQLParserException {
         assertSqlCanBeParsedAndDeparsed("SELECT * FROM t1 WHERE (col1, col2) = (SELECT col3, col4 FROM t2 WHERE id = 10)");
     }

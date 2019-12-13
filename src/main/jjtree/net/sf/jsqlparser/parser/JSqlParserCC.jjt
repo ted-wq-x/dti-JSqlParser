@@ -2931,8 +2931,6 @@ Expression PrimaryExpression() #PrimaryExpression:
 
         | LOOKAHEAD(3) retval=ExtractExpression()
 
-        | retval=MySQLGroupConcat()
-
         | LOOKAHEAD(JsonExpression()) retval=JsonExpression()
 
         | LOOKAHEAD(FunctionWithCondParams()) retval = FunctionWithCondParams()
@@ -3467,25 +3465,6 @@ Function InternalFunction(Function retval) :
         return retval;
     }
 } 
-
-MySQLGroupConcat MySQLGroupConcat():{
-    MySQLGroupConcat retval = new MySQLGroupConcat();
-    ExpressionList expressionList = null;
-    List<OrderByElement> orderByList = null;
-    Token t;
-}
-{
-    <K_GROUP_CONCAT> "(" 
-       [<K_DISTINCT>  { retval.setDistinct(true); } ] 
-       expressionList = SimpleExpressionList() 
-       [ orderByList = OrderByElements() { retval.setOrderByElements(orderByList); } ]
-       [ <K_SEPARATOR> t=<S_CHAR_LITERAL> { retval.setSeparator(t.image); } ]
-    ")"
-    { 
-        retval.setExpressionList(expressionList);
-        return retval; 
-    }
-}
 
 ValueListExpression ValueListExpression():
 {
