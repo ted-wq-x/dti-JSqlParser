@@ -179,7 +179,6 @@ TOKEN: /* SQL Keywords. prefixed with K_ to avoid name clashes */
 |   <K_FULLTEXT:"FULLTEXT">
 |   <K_GROUP:"GROUP">
 |   <K_GROUPING:"GROUPING">
-|   <K_GROUP_CONCAT:"GROUP_CONCAT">
 |   <K_HAVING:"HAVING">
 |   <K_HIGH_PRIORITY : "HIGH_PRIORITY">
 |   <K_HOPPING:"HOPPING">
